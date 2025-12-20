@@ -1,0 +1,72 @@
+import { VisualStyle, TextTone, CreativityLevel, ContextualPersona, ImageFormat } from './types';
+
+export const APP_VERSION = 'v25.12C';
+
+export const WHITELISTED_IPS = ['79.112.85.173', '37.223.15.63'];
+
+export const TEXT_MODEL_OPTIONS: { value: string; label: string }[] = [
+  { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (Velocidad/General)' },
+  { value: 'gemini-3-pro-preview', label: 'Gemini 3.0 Pro (Razonamiento Complejo)' },
+];
+
+export const IMAGE_MODEL_OPTIONS: { value: string; label: string }[] = [
+  { value: 'gemini-2.5-flash-image', label: 'Gemini 2.5 Flash Image (Nano Banana)' },
+  { value: 'gemini-3-pro-image-preview', label: 'Gemini 3.0 Pro Image (Alta Calidad)' },
+  { value: 'imagen-4.0-generate-001', label: 'Imagen 4.0 (Generación Pura)' },
+];
+
+export const IMAGE_FORMAT_OPTIONS: { value: ImageFormat; label: string }[] = [
+  { value: ImageFormat.JPEG, label: 'JPEG' },
+  { value: ImageFormat.PNG, label: 'PNG' },
+  { value: ImageFormat.WebP, label: 'WebP' },
+];
+
+export const DEFAULT_IMAGE_MODEL = IMAGE_MODEL_OPTIONS[0].value;
+
+
+export const PRIMARY_HASHTAG = '#BootCampIA'; 
+export const SECONDARY_HASHTAG = '#BarnaIA';
+
+export const VISUAL_STYLE_OPTIONS: { value: VisualStyle; label: string }[] = [
+  { value: VisualStyle.Photorealistic, label: '🖼️ Fotografía' },
+  { value: VisualStyle.Cinematic, label: '🎬 Cinemático' },
+  { value: VisualStyle.DroneShot, label: '🚁 Vista de Dron' },
+  { value: VisualStyle.MacroPhotography, label: '🔬 Macrofotografía' },
+  { value: VisualStyle.Infographic, label: '📊 Infografía' },
+  { value: VisualStyle.Pictogram, label: '🧩 Pictograma' },
+  { value: VisualStyle.Watercolor, label: '💧 Acuarela Artística' },
+  { value: VisualStyle.PixelArt, label: '👾 Pixel Art' },
+  { value: VisualStyle.RetroFuturism, label: '🚀 Retrofuturista' },
+  { value: VisualStyle.AbstractExpressionism, label: '🎨 Expresionismo Abstracto' },
+];
+
+export const TEXT_TONE_OPTIONS: { value: TextTone; label: string }[] = [
+  { value: TextTone.Professional, label: '👔 Profesional' },
+  { value: TextTone.Inspirational, label: '✨ Inspirador' },
+  { value: TextTone.Approachable, label: '🤗 Cercano' },
+  { value: TextTone.Technical, label: '⚙️ Técnico' },
+  { value: TextTone.Urgent, label: '❗ Urgente' },
+  { value: TextTone.Collaborative, label: '🤝 Colaborativo' },
+];
+
+export const CREATIVITY_LEVEL_OPTIONS: { value: CreativityLevel; label: string }[] = [
+  { value: CreativityLevel.Low, label: '📉 Bajo' },
+  { value: CreativityLevel.Medium, label: '🎨 Medio' },
+  { value: CreativityLevel.High, label: '🚀 Alto' },
+];
+
+export const CONTEXTUAL_PERSONA_OPTIONS: { value: ContextualPersona; label: string }[] = [
+  { value: ContextualPersona.MarketingExpert, label: '💼 Experto en Marketing' },
+  { value: ContextualPersona.CybersecurityExpert, label: '🛡️ Experto en Ciberseguridad' },
+  { value: ContextualPersona.AIBootcampEducator, label: '🎓 Formador BootCamp IA' },
+  { value: ContextualPersona.FinanceExpert, label: '📈 Experto en Finanzas y Bolsa' },
+  { value: ContextualPersona.VitagAppPlatform, label: '📹 Plataforma ViTAG.App' },
+  { value: ContextualPersona.Innovator, label: '💡 Innovador' },
+  { value: ContextualPersona.OpinionLeader, label: '👑 Líder de Opinión' },
+  { value: ContextualPersona.CommunityManager, label: '🤝 Gestor de Comunidad' },
+  { value: ContextualPersona.TechnicalWriter, label: '✍️ Redactor Técnico' },
+  { value: ContextualPersona.Storyteller, label: '📖 Narrador de Historias' },
+  { value: ContextualPersona.Influencer, label: '✨ Influencer' },
+  { value: ContextualPersona.HumanizedAI, label: '🤖✍️ IA Humanizada (Estilo Natural)' },
+  { value: ContextualPersona.Neutral, label: '👤 Neutral (Sin Rol Específico)' },
+];
