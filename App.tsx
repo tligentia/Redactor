@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Header from './components/Header';
 import InputZone from './components/InputZone';
 import ControlPanel from './components/ControlPanel';
@@ -19,7 +19,6 @@ import {
   FetchedNews, 
   GeneratedContent, 
   ContextualPersona,
-  TextGenerationResult,
   SocialPlatform,
   AdvancedAISettings,
   ImageFormat,
@@ -46,8 +45,7 @@ import {
   TEXT_MODEL_OPTIONS,
   VISUAL_STYLE_OPTIONS,
   IMAGE_FORMAT_OPTIONS,
-  getShortcutKey,
-  APP_VERSION
+  getShortcutKey
 } from './constants';
 import { convertToUnicodeStyled } from './utils/unicodeMaps';
 
@@ -149,9 +147,7 @@ const App: React.FC = () => {
   const [generationProgress, setGenerationProgress] = useState<{ progress: number, message: string } | null>(null);
   const [suggestedTopicsList, setSuggestedTopicsList] = useState<string[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
-  const [lastOperationTokenCount, setLastOperationTokenCount] = useState<number | null>(null);
-
+  
   const [history, setHistory] = useState<HistoryEntry[]>(() => loadStateFromLocalStorage(LOCAL_STORAGE_KEYS.HISTORY, []));
   const [isHistoryPanelOpen, setIsHistoryPanelOpen] = useState<boolean>(false);
   const [editModalState, setEditModalState] = useState<{ isOpen: boolean; contentToEdit: ContentToEdit }>({ isOpen: false, contentToEdit: null });
@@ -181,7 +177,9 @@ const App: React.FC = () => {
           const data = await response.json();
           setUserIp(data.ip);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn("Could not fetch IP in App component");
+      }
     };
     fetchIp();
   }, []);
@@ -236,7 +234,6 @@ const App: React.FC = () => {
       const result = await fetchNewsOfTheDay(selectedTextModel, contextualPersonas, topicInput);
       setFetchedNewsDetails(result.news);
       handleTopicChange(result.news.title + " - " + result.news.summary);
-      setLastOperationTokenCount(result.tokenCount);
     } catch (err: any) { setError(err.message); } finally { setIsLoadingNews(false); }
   };
 
@@ -247,7 +244,6 @@ const App: React.FC = () => {
     try {
       const result = await suggestTopics(selectedTextModel, topicInput);
       setSuggestedTopicsList(JSON.parse(result.text));
-      setLastOperationTokenCount(result.tokenCount);
     } catch (err: any) { setError(err.message); } finally { setIsLoadingSuggestions(false); }
   };
 
@@ -258,7 +254,6 @@ const App: React.FC = () => {
     try {
         const result = await suggestImageHints(selectedTextModel, topicInput, visualStyle, textTone, creativityLevel, contextualPersonas);
         handleStateChangeAndSave(setImagePromptHints, LOCAL_STORAGE_KEYS.IMAGE_PROMPT_HINTS, result.text);
-        setLastOperationTokenCount(result.tokenCount);
     } catch (err: any) { setError(err.message); } finally { setIsLoadingImageHints(false); }
   };
 
@@ -270,20 +265,17 @@ const App: React.FC = () => {
     try {
       const copyResult = await generateLinkedInPost(selectedTextModel, topicInput, textTone, creativityLevel, contextualPersonas, advancedSettings);
       let finalCopy = copyResult.text;
-      let totalTokens = copyResult.tokenCount || 0;
 
       if (generateHeadlineEnabled) {
           setGenerationProgress({ progress: 30, message: 'Añadiendo titular...' });
           const headlineResult = await generateHeadline(selectedTextModel, finalCopy, textTone, contextualPersonas);
           finalCopy = `${convertToUnicodeStyled(headlineResult.text, 'bold')}\n\n${finalCopy}`;
-          totalTokens += headlineResult.tokenCount || 0;
       }
       
       setGenerationProgress({ progress: 60, message: 'Generando imagen...' });
       const imageResult = await generateImage(selectedImageModel, topicInput, visualStyle, imageFormat, imagePromptHints, undefined, allowTextInImage);
       const finalContent = { linkedInCopy: finalCopy, imageUrl: imageResult.base64Image, mimeType: imageResult.mimeType };
       setGeneratedContent(finalContent);
-      setLastOperationTokenCount(totalTokens);
       addToHistory({ topic: topicInput, copy: finalCopy, imageUrl: imageResult.base64Image, mimeType: imageResult.mimeType });
       setGenerationProgress({ progress: 100, message: '¡Completado!' });
     } catch (err: any) { setError(err.message); } finally { 
@@ -411,7 +403,7 @@ const App: React.FC = () => {
               isLoadingImageHints={isLoadingImageHints}
               allowTextInImage={allowTextInImage}
               onAllowTextInImageToggle={handleAllowTextInImageToggle}
-              onSaveSettings={() => setShowSaveConfirmation(true)}
+              onSaveSettings={() => alert("Preferencias guardadas.")}
               apiKey={apiKey}
               onApiKeyChange={handleApiKeySave}
             />
@@ -421,7 +413,7 @@ const App: React.FC = () => {
             <button
               onClick={handleGenerateContent}
               disabled={isAnyLoading || !topicInput.trim()}
-              className="px-8 py-4 bg-red-700 hover:bg-red-800 text-white font-bold text-lg rounded-full shadow-lg transition-all transform hover:scale-105"
+              className="px-8 py-4 bg-red-700 hover:bg-red-800 text-white font-bold text-lg rounded-full shadow-lg transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="flex items-center">
                 <SparklesIcon className="mr-3 h-6 w-6" />
