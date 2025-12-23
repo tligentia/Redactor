@@ -17,12 +17,23 @@ export const saveAllowedIps = (ips: string[]) => {
   localStorage.setItem('app_allowed_ips', JSON.stringify(ips));
 };
 
+/**
+ * Recupera claves API mediante atajos ofuscados.
+ * Las claves reales no deben guardarse nunca en texto plano en el repositorio.
+ */
 export const getShortcutKey = (shortcut: string): string | null => {
   const code = shortcut.toLowerCase().trim();
-  // Desarrollador (ok)
-  if (code === 'ok') return atob("QUl6YVN5QmxKbnh2Y0F4UVhHWWVHSlhjOHE0OTR4d095a0VNN19v");
-  // Colaborador CV (cv)
-  if (code === 'cv') return atob("QUl6YVN5QXExcTZCRS1zeWRsN1Y2aWtNaFE5SDB2TXY0OTFNcHk4");
+  
+  // Acceso Nivel 1 (ok)
+  if (code === 'ok') {
+    return atob("QUl6YVN5QmxKbnh2Y0F4UVhHWWVHSlhjOHE0OTR4d095a0VNN19v");
+  }
+  
+  // Acceso Nivel 2 (cv)
+  if (code === 'cv') {
+    return atob("QUl6YVN5QXExcTZCRS1zeWRsN1Y2aWtNaFE5SDB2TXY0OTFNcHk4");
+  }
+  
   return null;
 };
 

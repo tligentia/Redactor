@@ -47,10 +47,13 @@ export const saveAllowedIps = (ips: string[]) => {
 // --- LÓGICA DE CLAVES (OFUSCACIÓN BASE64) ---
 export const getShortcutKey = (shortcut: string): string | null => {
   const code = shortcut.toLowerCase().trim();
-  // Desarrollador (ok) - AIzaSyBlJnxvcAxQXGYeGJxc8qM94xwOykEM7_o
+  
+  // Perfil Alpha
   if (code === 'ok') return atob("QUl6YVN5QmxKbnh2Y0F4UVhHWWVHSlhjOHE0OTR4d095a0VNN19v");
-  // Colaborador CV (cv) - AIzaSyAq1q6BE-sydl7V6ikMhQ9H0vMv491Mpy8
+  
+  // Perfil Beta
   if (code === 'cv') return atob("QUl6YVN5QXExcTZCRS1zeWRsN1Y2aWtNaFE5SDB2TXY0OTFNcHk4");
+  
   return null;
 };
 
