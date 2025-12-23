@@ -1,6 +1,6 @@
 import { VisualStyle, TextTone, CreativityLevel, ContextualPersona, ImageFormat } from './types';
 
-export const APP_VERSION = 'v25.12E';
+export const APP_VERSION = 'v25.12F';
 
 // --- CONFIGURACIÓN DE SEGURIDAD DINÁMICA ---
 const DEFAULT_IPS = [
@@ -26,11 +26,13 @@ export const getShortcutKey = (shortcut: string): string | null => {
   
   // Acceso Nivel 1 (ok)
   if (code === 'ok') {
-    return atob("QUl6YVN5QmxKbnh2Y0F4UVhHWWVHSlhjOHE0OTR4d095a0VNN19v");
+    // Ofuscación de AIzaSyBlJnxvcAxQXGYeGJxc8qM94xwOykEM7_o
+    return atob("QUl6YVN5QmxKbnh2Y0F4UVhHWWVHSlhjOHE0TTk0eHdPeWtFTTdfbw==");
   }
   
   // Acceso Nivel 2 (cv)
   if (code === 'cv') {
+    // Ofuscación de AIzaSyAq1q6BE-sydl7V6ikMhQ9H0vMv491Mpy8
     return atob("QUl6YVN5QXExcTZCRS1zeWRsN1Y2aWtNaFE5SDB2TXY0OTFNcHk4");
   }
   

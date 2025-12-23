@@ -97,10 +97,10 @@ const loadStateFromLocalStorage = <T,>(key: string, defaultValue: T, validOption
     if (validOptions) {
       if (Array.isArray(parsed)) {
           const validValues = new Set(validOptions.map(opt => opt.value));
-          const filtered = parsed.filter(p => validValues.has(p));
-          return filtered.length > 0 ? filtered as T : defaultValue;
+          const filtered = (parsed as any[]).filter(p => validValues.has(p));
+          return filtered.length > 0 ? (filtered as unknown as T) : defaultValue;
       }
-      return validOptions.some(opt => opt.value === parsed) ? parsed as T : defaultValue;
+      return validOptions.some(opt => opt.value === parsed) ? (parsed as T) : defaultValue;
     }
     return parsed as T;
   } catch (error) {
@@ -160,7 +160,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const initModels = async () => {
-        if (apiKey || process.env.API_KEY) {
+        if (apiKey || (typeof process !== 'undefined' && process.env.API_KEY)) {
             const dynamicModels = await fetchDynamicModels();
             if (dynamicModels.textModels.length > 0) setTextModelOptions(dynamicModels.textModels);
             if (dynamicModels.imageModels.length > 0) setImageModelOptions(dynamicModels.imageModels);
@@ -175,10 +175,10 @@ const App: React.FC = () => {
         const response = await fetch('https://api.ipify.org?format=json');
         if (response.ok) {
           const data = await response.json();
-          setUserIp(data.ip);
+          if (data && data.ip) setUserIp(data.ip);
         }
       } catch (e) {
-        console.warn("Could not fetch IP in App component");
+        // Ignorar fallo de fetch de IP
       }
     };
     fetchIp();
@@ -187,8 +187,11 @@ const App: React.FC = () => {
   useEffect(() => {
      const savedTextModel = loadStateFromLocalStorage(LOCAL_STORAGE_KEYS.SELECTED_TEXT_MODEL, '');
      const validModels = textModelOptions.map(m => m.value);
-     if (savedTextModel && validModels.includes(savedTextModel)) setSelectedTextModel(savedTextModel);
-     else setSelectedTextModel(getBestDefaultTextModel(textModelOptions));
+     if (savedTextModel && validModels.includes(savedTextModel)) {
+       setSelectedTextModel(savedTextModel);
+     } else {
+       setSelectedTextModel(getBestDefaultTextModel(textModelOptions));
+     }
   }, [textModelOptions]);
 
   const handleStateChangeAndSave = <T,>(setter: React.Dispatch<React.SetStateAction<T>>, key: string, value: T) => {
@@ -332,7 +335,9 @@ const App: React.FC = () => {
     if (!generatedContent) return;
     setEditModalState({
         isOpen: true,
-        contentToEdit: type === 'text' ? { type: 'text', content: generatedContent.linkedInCopy } : { type: 'image', content: `data:${generatedContent.mimeType};base64,${generatedContent.imageUrl}`, mimeType: generatedContent.mimeType }
+        contentToEdit: type === 'text' 
+          ? { type: 'text', content: generatedContent.linkedInCopy } 
+          : { type: 'image', content: `data:${generatedContent.mimeType};base64,${generatedContent.imageUrl}`, mimeType: generatedContent.mimeType }
     });
   };
 

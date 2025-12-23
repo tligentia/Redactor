@@ -32,30 +32,34 @@ const SecureAccessGate: React.FC<SecureAccessGateProps> = ({ children }) => {
         'https://api.seeip.org/jsonip'
       ];
 
-      let userIp: string | null = null;
+      let detectedUserIp: string | null = null;
       const allowedIps = getAllowedIps();
 
       for (const endpoint of endpoints) {
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 3000);
+          const timeoutId = setTimeout(() => controller.abort(), 2500);
 
           const response = await fetch(endpoint, { signal: controller.signal });
           clearTimeout(timeoutId);
 
           if (response.ok) {
             const data = await response.json();
-            userIp = data.ip || data.query || data.ip_address;
-            if (userIp) break;
+            // Verificamos de forma segura las posibles propiedades que devuelven los distintos servicios
+            const foundIp = data.ip || data.query || data.ip_address || data.address;
+            if (foundIp && typeof foundIp === 'string') {
+              detectedUserIp = foundIp.trim();
+              break;
+            }
           }
         } catch (error) {
-          // If fetch fails, we just try the next one quietly to avoid cluttering console 
-          // unless it's the last attempt.
+          // Fallo silencioso: intentar el siguiente endpoint
+          continue;
         }
       }
 
-      if (userIp && allowedIps.includes(userIp)) {
-        console.log("Whitelisted IP detected. Granting automatic access.");
+      if (detectedUserIp && allowedIps.includes(detectedUserIp)) {
+        console.log("Acceso automático: IP autorizada detectada.");
         handleAuthSuccess();
       }
       
@@ -69,7 +73,7 @@ const SecureAccessGate: React.FC<SecureAccessGateProps> = ({ children }) => {
     try {
       sessionStorage.setItem(SESSION_AUTH_KEY, 'true');
     } catch (e) {
-      console.warn("Could not set auth state in session storage.");
+      // Ignorar fallos en sessionStorage (ej. modo incógnito restrictivo)
     }
     setIsAuthenticated(true);
   };
@@ -77,7 +81,7 @@ const SecureAccessGate: React.FC<SecureAccessGateProps> = ({ children }) => {
   if (isCheckingIp) {
     return (
       <div className="fixed inset-0 bg-white flex flex-col items-center justify-center">
-        <LoadingSpinner size="lg" message="Verificando acceso de seguridad..." />
+        <LoadingSpinner size="lg" message="Validando credenciales de red..." />
       </div>
     );
   }

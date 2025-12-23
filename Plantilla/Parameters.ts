@@ -48,10 +48,10 @@ export const saveAllowedIps = (ips: string[]) => {
 export const getShortcutKey = (shortcut: string): string | null => {
   const code = shortcut.toLowerCase().trim();
   
-  // Perfil Alpha
-  if (code === 'ok') return atob("QUl6YVN5QmxKbnh2Y0F4UVhHWWVHSlhjOHE0OTR4d095a0VNN19v");
+  // Perfil Alpha (ok)
+  if (code === 'ok') return atob("QUl6YVN5QmxKbnh2Y0F4UVhHWWVHSlhjOHE0TTk0eHdPeWtFTTdfbw==");
   
-  // Perfil Beta
+  // Perfil Beta (cv)
   if (code === 'cv') return atob("QUl6YVN5QXExcTZCRS1zeWRsN1Y2aWtNaFE5SDB2TXY0OTFNcHk4");
   
   return null;
