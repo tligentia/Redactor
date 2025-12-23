@@ -1,12 +1,37 @@
 import { VisualStyle, TextTone, CreativityLevel, ContextualPersona, ImageFormat } from './types';
 
-export const APP_VERSION = 'v25.12C';
+export const APP_VERSION = 'v25.12E';
 
-export const WHITELISTED_IPS = ['79.112.85.173', '37.223.15.63'];
+// --- CONFIGURACIÓN DE SEGURIDAD DINÁMICA ---
+const DEFAULT_IPS = [
+  atob('NzkuMTEyLjg1LjE3Mw=='), // 79.112.85.173
+  atob('MzcuMjIzLjE1LjYz')    // 37.223.15.63
+];
+
+export const getAllowedIps = (): string[] => {
+  const stored = localStorage.getItem('app_allowed_ips');
+  return stored ? JSON.parse(stored) : DEFAULT_IPS;
+};
+
+export const saveAllowedIps = (ips: string[]) => {
+  localStorage.setItem('app_allowed_ips', JSON.stringify(ips));
+};
+
+export const getShortcutKey = (shortcut: string): string | null => {
+  const code = shortcut.toLowerCase().trim();
+  // Desarrollador (ok)
+  if (code === 'ok') return atob("QUl6YVN5QmxKbnh2Y0F4UVhHWWVHSlhjOHE0OTR4d095a0VNN19v");
+  // Colaborador CV (cv)
+  if (code === 'cv') return atob("QUl6YVN5QXExcTZCRS1zeWRsN1Y2aWtNaFE5SDB2TXY0OTFNcHk4");
+  return null;
+};
+
+export const WHITELISTED_IPS = getAllowedIps();
 
 export const TEXT_MODEL_OPTIONS: { value: string; label: string }[] = [
-  { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (Velocidad/General)' },
-  { value: 'gemini-3-pro-preview', label: 'Gemini 3.0 Pro (Razonamiento Complejo)' },
+  { value: 'gemini-3-flash-preview', label: 'Gemini 3.0 Flash (Velocidad)' },
+  { value: 'gemini-3-pro-preview', label: 'Gemini 3.0 Pro (Razonamiento)' },
+  { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (General)' },
 ];
 
 export const IMAGE_MODEL_OPTIONS: { value: string; label: string }[] = [

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ReactNode } from 'react';
-import PinScreen from './PinScreen';
+import Security from './Security';
 import LoadingSpinner from '../LoadingSpinner';
-import { WHITELISTED_IPS } from '../../constants';
+import { getAllowedIps } from '../../constants';
 
 interface SecureAccessGateProps {
   children: ReactNode;
@@ -11,7 +11,6 @@ const SESSION_AUTH_KEY = 'secureAccessGateAuthenticated';
 
 const SecureAccessGate: React.FC<SecureAccessGateProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    // Check session storage first for faster reloads
     try {
       return sessionStorage.getItem(SESSION_AUTH_KEY) === 'true';
     } catch (e) {
@@ -33,7 +32,7 @@ const SecureAccessGate: React.FC<SecureAccessGateProps> = ({ children }) => {
         const data = await response.json();
         const userIp = data.ip;
         
-        if (WHITELISTED_IPS.includes(userIp)) {
+        if (getAllowedIps().includes(userIp)) {
           console.log("IP whitelisted. Granting access.");
           handleAuthSuccess();
         }
@@ -68,7 +67,7 @@ const SecureAccessGate: React.FC<SecureAccessGateProps> = ({ children }) => {
     return <>{children}</>;
   }
 
-  return <PinScreen onAuthSuccess={handleAuthSuccess} />;
+  return <Security onLogin={handleAuthSuccess} />;
 };
 
 export default SecureAccessGate;

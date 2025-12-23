@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlertTriangle, Settings } from 'lucide-react';
-import { APP_VERSION, getAllowedIps } from '../constants';
+import { APP_VERSION } from '../constants';
+import { getAllowedIps } from './Parameters';
 
 interface FooterProps {
   userIp: string | null;
@@ -15,7 +16,7 @@ export const Footer: React.FC<FooterProps> = ({ userIp, onShowCookies, onShowAju
     <footer className="mt-12 border-t border-gray-200 pt-8 pb-4">
       <div className="bg-gray-50 border border-gray-200 p-4 rounded-xl text-center mb-8 flex items-center justify-center gap-3 text-xs text-gray-500">
         <AlertTriangle size={16} className="text-red-700" />
-        <span className="font-medium uppercase tracking-tight">Aviso Legal: El contenido generado es meramente informativo y orientado al marketing.</span>
+        <span className="font-medium uppercase tracking-tight">Aviso Legal: El contenido es meramente informativo y educativo.</span>
       </div>
       
       <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
@@ -52,5 +53,3 @@ export const Footer: React.FC<FooterProps> = ({ userIp, onShowCookies, onShowAju
     </footer>
   );
 };
-
-export default Footer;
