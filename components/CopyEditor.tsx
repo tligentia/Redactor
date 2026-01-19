@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import LoadingSpinner from './LoadingSpinner';
-// Added RefreshIcon to the import list from icons to fix the compilation error
 import { 
   CopyIcon, 
   LinkedInIcon, 
@@ -14,7 +13,8 @@ import {
   ListBulletIcon, 
   ListOrderedIcon,
   PencilIcon,
-  RefreshIcon
+  RefreshIcon,
+  CodeIcon
 } from './icons';
 import { TEXT_MODEL_OPTIONS } from '../constants'; 
 import {
@@ -101,6 +101,7 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
 }) => {
   const [resolvedModelLabel, setResolvedModelLabel] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copiedHtml, setCopiedHtml] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fullImageUrl = `data:${mimeType || 'image/jpeg'};base64,${imageUrl}`;
   const imageExtension = mimeType ? mimeType.split('/')[1] : 'jpg';
@@ -124,6 +125,39 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
         })
         .catch(err => console.error('Error al copiar texto: ', err));
     }
+  };
+
+  const handleCopyHtml = () => {
+    if (!copy) return;
+
+    // Helper to revert unicode styling for clean HTML
+    const normalize = (t: string) => [...t].map(c => BOLD_TO_NORMAL[c] || ITALIC_TO_NORMAL[c] || c).join('');
+    
+    const paragraphs = copy.split('\n').filter(p => p.trim() !== '');
+    let html = `<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #171717; line-height: 1.6; max-width: 650px; margin: auto; padding: 30px; background-color: #ffffff; border: 1px solid #e5e5e5; border-radius: 12px;">\n`;
+
+    paragraphs.forEach((p, i) => {
+      const cleanP = normalize(p).trim();
+      // Heuristic: First line is H1, lines starting with bold or short capitalized are H2
+      if (i === 0) {
+        html += `  <h1 style="color: #b91c1c; font-size: 28px; font-weight: 800; margin-bottom: 20px; border-left: 5px solid #b91c1c; padding-left: 15px; letter-spacing: -0.025em;">${cleanP}</h1>\n`;
+      } else if (p.startsWith('**') || [...p.substring(0, 3)].some(c => c in BOLD_TO_NORMAL)) {
+        html += `  <h2 style="color: #333333; font-size: 20px; font-weight: 700; margin-top: 30px; margin-bottom: 15px; border-bottom: 2px solid #f3f4f6; padding-bottom: 8px;">${cleanP}</h2>\n`;
+      } else {
+        html += `  <p style="margin-bottom: 18px; font-size: 16px;">${cleanP}</p>\n`;
+      }
+    });
+
+    html += `  <hr style="border: 0; border-top: 1px solid #eeeeee; margin: 30px 0;" />\n`;
+    html += `  <p style="font-size: 12px; color: #9ca3af; text-align: center; text-transform: uppercase; letter-spacing: 0.1em;">Generado con Redactor AI Studio</p>\n`;
+    html += `</div>`;
+
+    navigator.clipboard.writeText(html)
+      .then(() => {
+        setCopiedHtml(true);
+        setTimeout(() => setCopiedHtml(false), 2000);
+      })
+      .catch(err => console.error('Error al copiar HTML: ', err));
   };
 
   const handlePublishToLinkedIn = () => {
@@ -330,44 +364,60 @@ const CopyEditor: React.FC<CopyEditorProps> = ({
           </p>
       )}
 
-      <div className="mt-auto pt-4 w-full space-y-2">
+      <div className="mt-auto pt-4 w-full space-y-3">
         {copy !== null && !showInitialLoading && (
-            <div className="grid grid-cols-2 lg:grid-cols-2 gap-2">
-              <button
-                onClick={handleClipboardCopy}
-                disabled={isEffectivelyLoading}
-                className="w-full flex items-center justify-center px-4 py-2 bg-red-700 hover:bg-red-800 text-white font-semibold rounded-lg shadow-md transition-colors duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <CopyIcon className="mr-2" />
-                {copied ? '¡Copiado!' : 'Copiar Texto'}
-              </button>
-              <button
-                onClick={handlePublishToLinkedIn}
-                disabled={isEffectivelyLoading || !imageUrl || !copy}
-                className="w-full flex items-center justify-center px-4 py-2 bg-[#0A66C2] hover:bg-[#004182] text-white font-semibold rounded-lg shadow-md transition-colors duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Publicar en LinkedIn (requiere imagen y texto)"
-              >
-                <LinkedInIcon className="mr-2" />
-                LinkedIn
-              </button>
-              <button
-                onClick={handlePublishToTwitter}
-                disabled={isEffectivelyLoading || !copy}
-                className="w-full flex items-center justify-center px-4 py-2 bg-[#1DA1F2] hover:bg-[#0c85d0] text-white font-semibold rounded-lg shadow-md transition-colors duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Publicar en Twitter/X"
-              >
-                <TwitterIcon className="mr-2" />
-                Twitter/X
-              </button>
-              <button
-                onClick={handlePublishToInstagram}
-                disabled={isEffectivelyLoading || !imageUrl || !copy}
-                className="w-full flex items-center justify-center px-4 py-2 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white font-semibold rounded-lg shadow-md transition-all duration-150 ease-in-out hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-none disabled:bg-neutral-400"
-                title="Publicar en Instagram (requiere imagen y texto)"
-              >
-                <InstagramIcon className="mr-2" />
-                Instagram
-              </button>
+            <div className="flex flex-col gap-3">
+              {/* Acciones de Copiado Principal */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={handleClipboardCopy}
+                  disabled={isEffectivelyLoading}
+                  className="w-full flex items-center justify-center px-4 py-2 bg-neutral-800 hover:bg-black text-white font-semibold rounded-lg shadow-md transition-colors duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <CopyIcon className="mr-2" />
+                  {copied ? '¡Copiado!' : 'Copiar Texto'}
+                </button>
+                <button
+                  onClick={handleCopyHtml}
+                  disabled={isEffectivelyLoading}
+                  className="w-full flex items-center justify-center px-4 py-2 bg-red-700 hover:bg-red-800 text-white font-semibold rounded-lg shadow-md transition-colors duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Copiar contenido formateado en HTML para blogs o emails"
+                >
+                  <CodeIcon className="mr-2" />
+                  {copiedHtml ? '¡HTML Copiado!' : 'Copiar HTML'}
+                </button>
+              </div>
+
+              {/* Plataformas Sociales Reorganizadas */}
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={handlePublishToLinkedIn}
+                  disabled={isEffectivelyLoading || !imageUrl || !copy}
+                  className="w-full flex items-center justify-center px-4 py-2 bg-[#0A66C2] hover:bg-[#004182] text-white font-semibold rounded-lg shadow-md transition-colors duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Publicar en LinkedIn (requiere imagen y texto)"
+                >
+                  <LinkedInIcon className="mr-2" />
+                  LinkedIn
+                </button>
+                <button
+                  onClick={handlePublishToTwitter}
+                  disabled={isEffectivelyLoading || !copy}
+                  className="w-full flex items-center justify-center px-4 py-2 bg-[#1DA1F2] hover:bg-[#0c85d0] text-white font-semibold rounded-lg shadow-md transition-colors duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Publicar en Twitter/X"
+                >
+                  <TwitterIcon className="mr-2" />
+                  Twitter
+                </button>
+                <button
+                  onClick={handlePublishToInstagram}
+                  disabled={isEffectivelyLoading || !imageUrl || !copy}
+                  className="w-full flex items-center justify-center px-4 py-2 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white font-semibold rounded-lg shadow-md transition-all duration-150 ease-in-out hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-none disabled:bg-neutral-400"
+                  title="Publicar en Instagram (requiere imagen y texto)"
+                >
+                  <InstagramIcon className="mr-2" />
+                  Instagram
+                </button>
+              </div>
             </div>
         )}
       </div>
