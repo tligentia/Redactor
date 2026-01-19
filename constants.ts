@@ -1,6 +1,6 @@
 import { VisualStyle, TextTone, CreativityLevel, ContextualPersona, ImageFormat } from './types';
 
-export const APP_VERSION = 'v25.12F';
+export const APP_VERSION = 'v26.01A';
 
 // --- CONFIGURACIÓN DE SEGURIDAD DINÁMICA ---
 const DEFAULT_IPS = [
