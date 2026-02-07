@@ -412,10 +412,8 @@ export const generateLinkedInPost = async (
   - Gancho inicial impactante.
   - 2-4 párrafos significativos.
   - Pregunta abierta o llamada a la acción.
-  Hashtags (separados por salto de línea al final):
-  - ${PRIMARY_HASHTAG}
-  - 3-5 relevantes.
-  - ${SECONDARY_HASHTAG}
+  Hashtags (en una sola línea al final, separados por espacios):
+  ${PRIMARY_HASHTAG} (3-5 relevantes) ${SECONDARY_HASHTAG}
   ${conditionalHashtags.length > 0 ? `- Añade: "${conditionalHashtags.join(' ')}"` : ''}
   `;
   return generateTextWithTokens(textModel, prompt, advancedSettings);
@@ -438,10 +436,8 @@ export const generateTwitterPost = async (
   Objetivo: Tweet impactante (< 280 caracteres).
   Estructura:
   - Gancho + Idea clave + Call to action breve.
-  Hashtags:
-  - ${PRIMARY_HASHTAG}
-  - 2-3 relevantes.
-  - ${SECONDARY_HASHTAG}
+  Hashtags (en una sola línea al final, separados por espacios):
+  ${PRIMARY_HASHTAG} (2-3 relevantes) ${SECONDARY_HASHTAG}
   ${conditionalHashtags.length > 0 ? `- Añade: "${conditionalHashtags.join(' ')}"` : ''}
   `;
   return generateTextWithTokens(textModel, prompt, advancedSettings);
@@ -467,10 +463,8 @@ export const generateInstagramCaption = async (
   - 2-3 párrafos cortos.
   - Emojis generosos.
   - Call to action.
-  Hashtags:
-  - ${PRIMARY_HASHTAG}
-  - Bloque de 5-10 hashtags.
-  - ${SECONDARY_HASHTAG}
+  Hashtags (en una sola línea al final, separados por espacios):
+  ${PRIMARY_HASHTAG} (5-10 hashtags) ${SECONDARY_HASHTAG}
   ${conditionalHashtags.length > 0 ? `- Añade: "${conditionalHashtags.join(' ')}"` : ''}
   `;
   return generateTextWithTokens(textModel, prompt, advancedSettings);
@@ -495,10 +489,8 @@ export const generateFacebookPost = async (
   - Gancho.
   - 2-4 párrafos explicativos pero cercanos.
   - Pregunta o encuesta implícita.
-  Hashtags:
-  - ${PRIMARY_HASHTAG}
-  - 3-5 relevantes.
-  - ${SECONDARY_HASHTAG}
+  Hashtags (en una sola línea al final, separados por espacios):
+  ${PRIMARY_HASHTAG} (3-5 relevantes) ${SECONDARY_HASHTAG}
   ${conditionalHashtags.length > 0 ? `- Añade: "${conditionalHashtags.join(' ')}"` : ''}
   `;
   return generateTextWithTokens(textModel, prompt, advancedSettings);
